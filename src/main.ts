@@ -5,11 +5,20 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors({
-  origin: ['http://localhost:3002', 'http://localhost:3000', 'http://localhost:3001',"https://s0380lsz-3000.inc1.devtunnels.ms", "*", "http://localhost:4001","https://propai-backend-fixed.vercel.app"],
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  });
+ app.enableCors({
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3002',
+    'http://localhost:4001',
+    'https://s0380lsz-3000.inc1.devtunnels.ms',
+    'https://propai-backend-fixed.vercel.app',
+    "https://prop-ai-phi.vercel.app/",
+  ],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+});
 
   app.setGlobalPrefix('api/v1');
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
