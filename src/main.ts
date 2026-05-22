@@ -13,7 +13,7 @@ async function bootstrap() {
     'http://localhost:4001',
     'https://s0380lsz-3000.inc1.devtunnels.ms',
     'https://propai-backend-fixed.vercel.app',
-    "https://prop-ai-phi.vercel.app/",
+    "https://prop-ai-phi.vercel.app",
   ],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
