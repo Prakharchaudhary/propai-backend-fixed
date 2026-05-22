@@ -89,4 +89,10 @@ export class PropertiesController {
   softDelete(@Param('id') id: string) {
     return this.propertiesService.softDelete(id);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('admin/all')
+  findAllAdmin(@Query() filters: any) {
+  return this.propertiesService.findAllAdmin(filters);
+}
 }

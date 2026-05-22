@@ -40,6 +40,15 @@ export class PropertiesService {
       .exec();
   }
 
+  async findAllAdmin(filters: any = {}) {
+  const query: any = {};
+  if (filters.status) query.status = filters.status;
+  if (filters.city) query.city = new RegExp(filters.city, 'i');
+  if (filters.listingType) query.listingType = filters.listingType;
+  if (filters.configuration) query.configuration = filters.configuration;
+  return this.propertyModel.find(query).sort({ createdAt: -1 }).exec();
+}
+
   async findBySlug(slug: string) {
     const property = await this.propertyModel.findOne({ slug }).exec();
     if (!property) throw new NotFoundException('Property not found');

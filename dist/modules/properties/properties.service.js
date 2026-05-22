@@ -52,6 +52,18 @@ let PropertiesService = class PropertiesService {
             .sort({ isFeatured: -1, createdAt: -1 })
             .exec();
     }
+    async findAllAdmin(filters = {}) {
+        const query = {};
+        if (filters.status)
+            query.status = filters.status;
+        if (filters.city)
+            query.city = new RegExp(filters.city, 'i');
+        if (filters.listingType)
+            query.listingType = filters.listingType;
+        if (filters.configuration)
+            query.configuration = filters.configuration;
+        return this.propertyModel.find(query).sort({ createdAt: -1 }).exec();
+    }
     async findBySlug(slug) {
         const property = await this.propertyModel.findOne({ slug }).exec();
         if (!property)

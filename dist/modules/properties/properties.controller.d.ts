@@ -23,4 +23,7 @@ export declare class PropertiesController {
     softDelete(id: string): Promise<import("mongoose").Document<unknown, {}, import("./schemas/property.schema").PropertyDocument> & import("./schemas/property.schema").Property & import("mongoose").Document<any, any, any> & {
         _id: import("mongoose").Types.ObjectId;
     }>;
+    findAllAdmin(filters: any): Promise<(import("mongoose").Document<unknown, {}, import("./schemas/property.schema").PropertyDocument> & import("./schemas/property.schema").Property & import("mongoose").Document<any, any, any> & {
+        _id: import("mongoose").Types.ObjectId;
+    })[]>;
 }

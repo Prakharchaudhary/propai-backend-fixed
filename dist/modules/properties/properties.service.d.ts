@@ -9,6 +9,9 @@ export declare class PropertiesService {
     findAll(filters?: any): Promise<(import("mongoose").Document<unknown, {}, PropertyDocument> & Property & import("mongoose").Document<any, any, any> & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
+    findAllAdmin(filters?: any): Promise<(import("mongoose").Document<unknown, {}, PropertyDocument> & Property & import("mongoose").Document<any, any, any> & {
+        _id: import("mongoose").Types.ObjectId;
+    })[]>;
     findBySlug(slug: string): Promise<import("mongoose").Document<unknown, {}, PropertyDocument> & Property & import("mongoose").Document<any, any, any> & {
         _id: import("mongoose").Types.ObjectId;
     }>;
