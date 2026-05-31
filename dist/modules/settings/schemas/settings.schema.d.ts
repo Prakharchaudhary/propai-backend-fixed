@@ -6,10 +6,16 @@ declare class Media {
 }
 declare class Banner {
     image: Media;
+    videoUrl: string;
+    mediaType: string;
     title: string;
     subtitle: string;
+    badge: string;
     ctaText: string;
     ctaLink: string;
+    ctaSecondaryText: string;
+    ctaSecondaryLink: string;
+    overlayOpacity: number;
     isActive: boolean;
     order: number;
 }
@@ -35,9 +41,13 @@ export declare class Settings {
     tagline: string;
     logo: Media;
     favicon: Media;
+    bgColor: string;
+    accentColor: string;
+    cardColor: string;
     primaryColor: string;
     secondaryColor: string;
     banners: Banner[];
+    bannerInterval: number;
     contact: Contact;
     social: Social;
     seo: SEO;

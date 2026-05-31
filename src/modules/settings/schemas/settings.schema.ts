@@ -11,9 +11,17 @@ class Media {
   publicId!: string;
 }
 
+// ← @Schema() added so Mongoose generates _id for each banner subdocument
+@Schema({ _id: true })
 class Banner {
   @Prop({ type: Media, default: {} })
   image!: Media;
+
+  @Prop({ default: '' })
+  videoUrl!: string;
+
+  @Prop({ default: 'image' })
+  mediaType!: string;
 
   @Prop({ default: '' })
   title!: string;
@@ -22,10 +30,22 @@ class Banner {
   subtitle!: string;
 
   @Prop({ default: '' })
+  badge!: string;
+
+  @Prop({ default: '' })
   ctaText!: string;
 
   @Prop({ default: '' })
   ctaLink!: string;
+
+  @Prop({ default: '' })
+  ctaSecondaryText!: string;
+
+  @Prop({ default: '' })
+  ctaSecondaryLink!: string;
+
+  @Prop({ default: 50 })
+  overlayOpacity!: number;
 
   @Prop({ default: true })
   isActive!: boolean;
@@ -72,44 +92,48 @@ class SEO {
 
 @Schema({ timestamps: true })
 export class Settings {
-  // Future SaaS Support
   @Prop({ required: false })
   tenantId?: string;
 
-  // Dealer Info
   @Prop({ default: 'PropAI Realty' })
   dealerName!: string;
 
   @Prop({ default: 'Your Dream Home Awaits' })
   tagline!: string;
 
-  // Branding
   @Prop({ type: Media, default: {} })
   logo!: Media;
 
   @Prop({ type: Media, default: {} })
   favicon!: Media;
 
-  // Theme Colors
+  @Prop({ default: '#f8fafc' })
+  bgColor!: string;
+
+  @Prop({ default: '#2563eb' })
+  accentColor!: string;
+
+  @Prop({ default: '#ffffff' })
+  cardColor!: string;
+
   @Prop({ default: '#1a2f5a' })
   primaryColor!: string;
 
   @Prop({ default: '#2563eb' })
   secondaryColor!: string;
 
-  // Homepage Banners
   @Prop({ type: [Banner], default: [] })
   banners!: Banner[];
 
-  // Contact Details
+  @Prop({ default: 5000 })
+  bannerInterval!: number;
+
   @Prop({ type: Contact, default: {} })
   contact!: Contact;
 
-  // Social Media Links
   @Prop({ type: Social, default: {} })
   social!: Social;
 
-  // SEO Configuration
   @Prop({ type: SEO, default: {} })
   seo!: SEO;
 }

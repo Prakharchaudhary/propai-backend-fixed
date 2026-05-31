@@ -18,6 +18,12 @@ const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const settings_schema_1 = require("./schemas/settings.schema");
 const media_service_1 = require("../media/media.service");
+const FIELD_DEFAULTS = {
+    accentColor: '#2563eb',
+    bgColor: '#f8fafc',
+    cardColor: '#ffffff',
+    bannerInterval: 5000,
+};
 let SettingsService = class SettingsService {
     constructor(settingsModel, mediaService) {
         this.settingsModel = settingsModel;
@@ -28,6 +34,17 @@ let SettingsService = class SettingsService {
         if (!settings) {
             settings = new this.settingsModel({});
             await settings.save();
+            return settings;
+        }
+        const patch = {};
+        for (const [key, val] of Object.entries(FIELD_DEFAULTS)) {
+            if (settings[key] === undefined || settings[key] === null) {
+                patch[key] = val;
+            }
+        }
+        if (Object.keys(patch).length > 0) {
+            await this.settingsModel.findByIdAndUpdate(settings._id, { $set: patch }).exec();
+            return { ...settings.toObject(), ...patch };
         }
         return settings;
     }
@@ -44,7 +61,7 @@ let SettingsService = class SettingsService {
     async uploadLogo(file) {
         const settings = await this.settingsModel.findOne().exec();
         if (settings?.logo?.publicId) {
-            await this.mediaService.deleteImage(settings.logo.publicId);
+            await this.mediaService.deleteImage(settings.logo.publicId).catch(() => { });
         }
         const uploaded = await this.mediaService.uploadImage(file, 'propai/branding');
         return this.update({ logo: uploaded });
@@ -52,37 +69,52 @@ let SettingsService = class SettingsService {
     async uploadFavicon(file) {
         const settings = await this.settingsModel.findOne().exec();
         if (settings?.favicon?.publicId) {
-            await this.mediaService.deleteImage(settings.favicon.publicId);
+            await this.mediaService.deleteImage(settings.favicon.publicId).catch(() => { });
         }
         const uploaded = await this.mediaService.uploadImage(file, 'propai/branding');
         return this.update({ favicon: uploaded });
     }
     async addBanner(data, file) {
-        const uploaded = await this.mediaService.uploadImage(file, 'propai/banners');
+        let imageData = { url: '', publicId: '' };
+        if ((!data.mediaType || data.mediaType === 'image') && file) {
+            const uploaded = await this.mediaService.uploadImage(file, 'propai/banners');
+            imageData = { url: uploaded.url, publicId: uploaded.publicId };
+        }
         const banner = {
-            image: uploaded,
+            image: imageData,
+            videoUrl: data.videoUrl || '',
+            mediaType: data.mediaType || 'image',
             title: data.title || '',
             subtitle: data.subtitle || '',
+            badge: data.badge || '',
             ctaText: data.ctaText || 'Explore Now',
             ctaLink: data.ctaLink || '/properties',
+            ctaSecondaryText: data.ctaSecondaryText || '',
+            ctaSecondaryLink: data.ctaSecondaryLink || '',
+            overlayOpacity: Number(data.overlayOpacity) || 50,
             isActive: true,
             order: Number(data.order) || 0,
         };
         return this.settingsModel.findOneAndUpdate({}, { $push: { banners: banner } }, { new: true, upsert: true });
     }
     async deleteBanner(bannerId) {
-        const settings = await this.settingsModel.findOne().exec();
-        const banner = settings?.banners?.find((b) => b._id.toString() === bannerId);
-        if (banner?.image?.publicId) {
-            await this.mediaService.deleteImage(banner.image.publicId);
+        const settings = await this.settingsModel.findOne();
+        if (!settings) {
+            throw new Error('Settings not found');
         }
-        return this.settingsModel.findOneAndUpdate({}, { $pull: { banners: { _id: bannerId } } }, { new: true });
+        settings.banners = settings.banners.filter((banner) => {
+            return banner?._id?.toString() !== bannerId;
+        });
+        await settings.save();
+        return settings;
     }
     async updateBannerOrder(banners) {
         const settings = await this.settingsModel.findOne().exec();
         if (!settings)
             return null;
         for (const b of banners) {
+            if (!b.id || b.id === 'undefined')
+                continue;
             await this.settingsModel.updateOne({ 'banners._id': b.id }, { $set: { 'banners.$.order': b.order } });
         }
         return this.settingsModel.findOne().exec();
